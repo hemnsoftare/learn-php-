@@ -1,60 +1,63 @@
-<?php
-ob_start();
-include 'includes/navbar.php';
+    <?php
+    include 'includes/navbar.php';
+    ?>
+    <?php
+    ob_start();
+    session_start();
+        global $conn;
+    $errors = ["result" => ["email" => "", "password" => ""]];
+    if (isset($_POST['submite'])) {
+        $email = clear($_POST['Username']);
+        $password = clear($_POST['Password']);
+        if (empty($email)) {
+            $errors["result"]["email"] = "user name  is required";
+        }
+        if (empty($password)) {
+            $errors["result"]["password"] = "Password is required";
+        }
+        if (empty($errors["result"]["email"]) && empty($errors["result"]["password"])) {
+            echo "<br>";
+            echo " in if " ;
+            $query = "SELECT * FROM user WHERE username='$email' AND password='$password'";
+            echo "result";
+            $data = mysqli_query($conn, $query);
+            if (mysqli_num_rows($data) == 1) {
+                while ($row = mysqli_fetch_assoc($data)) {
+                    echo $row['username'];
+                    $_SESSION['username'] = $row['username'];
+                    $_SESSION['role'] = $row['role'];
+                    echo "<br>";
+                    echo $_SESSION['username'];
+            header("Location: products.php");
+            exit();
+                }}else{
+                    header("Location: login.php");
+            }}}?>
+    
+    <div class="container text-center mt-4 bg-light p-4">
+        <script src="/lib/login.js" >   </script>
+        <button class="user btn btn-primary m-3" style="width: 200px; height: 50px;">users</button>
+        <button class="admin btn btn-secondary m-3" style="width: 200px; height: 50px;">Admin</button>
 
-?>
-<?php
+        <div class="row justify-content-center">
+            <?php
+            $i = 0;
+            while ($i <= 1) {
+                $buttonClass = $i === 0 ? 'btn-primary' : 'btn-warning';
+                $buttonName = "submite";
+                ?>
+                <form action="" method="POST" class="<?= $i === 0 ? 'fuser' : 'fadmin d-none' ?> m-2 col-lg-4 bg-white p-4 radius-10 shadow-sm">
+                    <input type="text" name="Username" placeholder="Username" class="form-control form-control-lg radius-10 mt-2">
+                    <input type="password" placeholder="Password" name="Password" class="form-control form-control-lg radius-10 mt-2">
+                    <input type="hidden" name="role" value="<?= $i ===0 ?"user" : "admin" ?>">
+                    <button class="btn <?= $buttonClass ?> w-100 mt-3 radius-10" name="<?= $buttonName ?>">Login</button>
 
-$errors = ["result" => ["email" => "", "password" => ""]];
-
-if (isset($_POST['login'])) {
-    $email = htmlspecialchars($_POST['email']);
-    $password = htmlspecialchars($_POST['password']);
-
-    if (empty($email)) {
-        $errors["result"]["email"] = "Email is required";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors["result"]["email"] = "Invalid email format";
-    }
-
-    if (empty($password)) {
-        $errors["result"]["password"] = "Password is required";
-    }
-
-//     Only redirect if there are no errors
-    if (empty($errors["result"]["email"]) && empty($errors["result"]["password"])) {
-        header("Location: home.php");
-        exit();
-    }
-
-}
- ?>
-
-<div class="container mt-5">
-    <div class="card p-4 shadow-lg rounded">
-        <h2 class="text-center mb-4">Lssogin</h2>
-dfasdddsssssssffffff
-        <form  method="POST">
-
-            <div class="mb-3 row">
-                <label for="staticEmail" class="col-sm-2 col-form-label fw-bold">Email</label>
-                <div class="col-sm-10">
-                    <input type="text" name="email" class="form-control border rounded" id="staticEmail" placeholder="Enter your email">
-                </div>
-                <p class="text-danger"><?php echo $errors["result"]["email"]; ?></p>
-            </div>
-
-            <div class="mb-3 row">
-                <label for="inputPassword" class="col-sm-2 col-form-label fw-bold">Password</label>
-                <div class="col-sm-10">
-                    <input type="password" name="password" class="form-control" id="inputPassword" placeholder="Enter your password">
-                </div>
-                <p class="text-danger"><?php echo $errors["result"]["password"]; ?></p>
-            </div>
-
-            <div class="text-center">
-                <button name="login" type="submit"  class="btn btn-primary w-100">Login</button>
-            </div>
-        </form>
+                </form>
+                <?php
+                $i++;
+            }
+            ?>
+        </div>
     </div>
-</div>
+
+
